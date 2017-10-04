@@ -1,0 +1,58 @@
+<!doctype HTML>
+<html>
+<head>
+	<title>Basic Example</title>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script>
+	<script src="three-ui.min.js"></script>
+
+	<style type="text/css">
+	body { margin: 0; }	
+	</style>
+</head>
+<body>
+<script type="text/javascript">
+	
+	// Create a new THREE.WebGLRenderer
+	const renderer = new THREE.WebGLRenderer({ alpha: true });
+	renderer.setSize(window.innerWidth, window.innerHeight);
+
+	document.body.appendChild(renderer.domElement);
+
+	// Create a UI of 720 pixels high
+	// will scale up to match renderer.domElement's size
+	const ui = new ThreeUI(renderer.domElement, 720);
+
+	// Place a Pretty Pink 500x150 rectangle in the center of the screen
+	const rectangle = ui.createRectangle('#FF6D92', 0, 0, 500, 100);
+	rectangle.anchor.x = ThreeUI.anchors.center;
+	rectangle.anchor.y = ThreeUI.anchors.center;
+
+	// Add some text to the rectangle
+	const text = ui.createText('BEST BUTTON EVER', '40px Arial', 'white');
+	text.textAlign = 'center';
+	text.textBaseline = 'middle';
+	text.anchor.x = ThreeUI.anchors.center;
+	text.anchor.y = ThreeUI.anchors.center;
+
+	text.parent = rectangle;
+
+	// Give the rectangle a click handler
+	rectangle.onClick(() => {
+		console.info('You got me!');
+	});
+
+	// Animate that rectangle!
+	const animate = (deltaTime = 0) => {
+		rectangle.x = Math.sin(deltaTime / 500) * 100;
+		rectangle.y = Math.cos(deltaTime / 500) * 100;
+
+		ui.render(renderer);
+
+		requestAnimationFrame(animate);
+	};
+	animate();
+
+</script>
+</body>
+</html>

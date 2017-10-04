@@ -245,7 +245,7 @@ DisplayObject.prototype.shouldReceiveEvents = function() {
  */
 
 DisplayObject.prototype.onClick = function(callback) {
-	this.ui.addEventListener('click', callback);
+	this.ui.addEventListener('click', callback, this);
 };
 
 /**

@@ -2,15 +2,79 @@
 
 UI solution for [Three.js](http://threejs.org/).
 
-Basic layout system that will draw UI elements (sprites, text) on a canvas, and will render this canvas on a quad in a separate Three.js scene.
-
-Comes with an asset loader as well. You can use your own asset loading implementation, but ThreeUI depends on `AssetLoader.getAssetById` to exist and return correct objects. For now I would recommend using the provided asset loader.
-
-The example below will not work when copy pasted, it's missing the creation of a Three.js renderer. I plan to update this with (a) fully working example(s).
+Basic layout system that will draw UI elements (rectangles, text, sprites) on a canvas, and will render this canvas on a quad in a separate Three.js scene.
 
 ## Usage
 
-Take the `asset-loader.min.js` and `three-ui.min.js` from the lib directory.
+Once you make sure you have three.js and three-ui loaded you can get started quite easily.
+
+```js
+// Setup THREE.WebGLRenderer
+const renderer = new THREE.WebGLRenderer();
+document.body.appendChild(renderer.domElement);
+
+const ui = new ThreeUI(renderer.domElement, 720);
+
+// Create things
+const rectangle = ui.createRectangle('#FF6D92', 0, 0, 250, 250);
+
+// Render!
+ui.render(renderer);
+```
+
+## Basic Example
+
+Full source can be found in `examples/` ([here](examples/basic.html)).
+
+```js
+// Create a new THREE.WebGLRenderer
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+// Create a UI of 720 pixels high
+// will scale up to match renderer.domElement's size
+const ui = new ThreeUI(renderer.domElement, 720);
+
+// Place a Pretty Pink 500x150 rectangle in the center of the screen
+const rectangle = ui.createRectangle('#FF6D92', 0, 0, 500, 100);
+rectangle.anchor.x = ThreeUI.anchors.center;
+rectangle.anchor.y = ThreeUI.anchors.center;
+
+// Add some text to the rectangle
+const text = ui.createText('BEST BUTTON EVER', '40px Arial', 'white');
+text.textAlign = 'center';
+text.textBaseline = 'middle';
+text.anchor.x = ThreeUI.anchors.center;
+text.anchor.y = ThreeUI.anchors.center;
+
+text.parent = rectangle;
+
+// Give the rectangle a click handler
+rectangle.onClick(() => {
+	console.info('You got me!');
+});
+
+// Animate that rectangle!
+const animate = (deltaTime = 0) => {
+	rectangle.x = Math.sin(deltaTime / 500) * 100;
+	rectangle.y = Math.cos(deltaTime / 500) * 100;
+
+	ui.render(renderer);
+
+	requestAnimationFrame(animate);
+};
+animate();
+```
+
+## More examples
+
+The following example is more like an appendix and won't fully run, will split this up into working examples later.
+
+This project comes with an asset loader as well (for now at least). You can use your own asset loading implementation, but ThreeUI depends on `AssetLoader.getAssetById` to exist and return correct objects. 
+
+For now I would recommend using the provided asset loader to make sure everything works properly.
 
 ```js
 // Add assets to the asset loader

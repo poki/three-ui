@@ -4,6 +4,8 @@ var Rectangle = require('./Rectangle.js');
 var Sprite = require('./Sprite.js');
 var Text = require('./Text.js');
 
+var isFirefox = require('./utils/browserDetection.js').isFirefox;
+
 // All properties that when adjusted will force a redraw of the UI
 var dirtyProperties = ['x','y','width','height','rotation','alpha','visible','pivot','anchor','smoothing','stretch','offset','text','scale','parent','textAlign','assetPath','color','left','right','up','down','ActiveInvoke'];
 
@@ -37,9 +39,10 @@ var observeDirtyProperties = function(object, ui) {
  * 
  * @param {HTMLCanvasElement} gameCanvas 
  * @param {int} height The pixel height of this UI -- Default: 720
+ * @param {bool} renderOnQuad Render on a quad, if false, canvas will be in DOM
  */
 
-var ThreeUI = function(gameCanvas, height, renderOnQuad, resolution) {
+var ThreeUI = function(gameCanvas, height, renderOnQuad) {
 	this.displayObjects = [];
 	this.eventListeners = {
 		click: [],
@@ -52,7 +55,6 @@ var ThreeUI = function(gameCanvas, height, renderOnQuad, resolution) {
 	this.context = this.canvas.getContext('2d');
 	this.renderOnQuad = renderOnQuad || false;
 	this.shouldReDraw = true;
-	this.resolution = resolution || 1;
 	
 	if (this.renderOnQuad) {
 		this.prepareThreeJSScene();
@@ -131,12 +133,12 @@ ThreeUI.prototype.resize = function() {
 	var gameCanvasAspect = this.gameCanvas.width / this.gameCanvas.height;
 	this.width = this.height * gameCanvasAspect;
 
-	this.canvas.width = this.width * this.resolution;
-	this.canvas.height = this.height * this.resolution;
+	this.canvas.width = this.width
+	this.canvas.height = this.height;
 
 	var containerWidth = this.gameCanvas.parentNode.getBoundingClientRect().width;
 
-	this.canvas.style.transform = 'scale(' + (containerWidth / this.width / this.resolution) + ')';
+	this.canvas.style.transform = 'scale(' + (containerWidth / this.width) + ')';
 
 	this.shouldReDraw = true;
 };
@@ -301,9 +303,7 @@ ThreeUI.prototype.createBitmapText = function(text, size, x, y, sheetImagePath, 
 
 ThreeUI.prototype.addEventListener = function(type, callback, displayObject) {
 	this.eventListeners[type].push({
-		callback: function() {
-			callback(displayObject);
-		},
+		callback: callback,
 		displayObject: displayObject
 	});
 };
@@ -365,6 +365,22 @@ ThreeUI.prototype.windowToUISpace = function(x, y) {
 }
 
 /**
+ * Moves a ui element to the back of the displayobject queue
+ * which causes it to render above other objects
+ * 
+ * @param {ThreeUI.DisplayObject} displayObject
+ */ 
+ThreeUI.prototype.moveToFront = function(displayObject) {
+	var elIdx = this.displayObjects.indexOf(displayObject);
+
+	if (elIdx > -1) {
+		this.displayObjects.splice(elIdx, 1);
+	}
+
+	this.displayObjects.push(displayObject);
+};
+
+/**
  * Helper method used to determine whether a point is inside of a given bounding box
  * 
  * @param {int} x 
@@ -384,22 +400,6 @@ ThreeUI.isInBoundingBox = function(x, y, boundX, boundY, boundWidth, boundHeight
 		y >= boundY &&
 		y <= boundY + boundHeight
 	);
-};
-
-/**
- * Moves a ui element to the back of the displayobject queue
- * which causes it to render above other objects
- * 
- * @param {obj} the UI element to move up
- */ 
-ThreeUI.prototype.MoveToFront = function(UIElement) {
-	var elIdx = this.displayObjects.indexOf(UIElement);
-
-	if (elIdx !== -1) {
-		this.displayObjects.splice(this.displayObjects.indexOf(UIElement), 1);
-	}
-
-	this.displayObjects.push(UIElement);
 };
 
 // Export ThreeUI as module

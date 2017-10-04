@@ -17,6 +17,7 @@ var DisplayObject = require('./DisplayObject.js');
 
 var Text = function(ui, text, font, color, x, y) {
 	this.textAlign = 'left';
+	this.textBaseline = 'left';
 
 	this.text = typeof text !== 'undefined' ? text : '';
 	this.font = typeof font !== 'undefined' ? font : '12px Arial';
@@ -44,6 +45,7 @@ Text.prototype.draw = function(context, x, y) {
 	context.font = this.font;
 	context.fillStyle = this.color;
 	context.textAlign = this.textAlign;
+	context.textBaseline = this.textBaseline;
 	context.fillText(this.text, x, y);
 };
 
