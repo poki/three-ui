@@ -235,7 +235,7 @@ DisplayObject.prototype.adjustPositionForPivot = function(x , y) {
  */
 
 DisplayObject.prototype.shouldReceiveEvents = function() {
-	return this.visible && this.alpha > 0;
+	return this.visible;
 };
 
 /**
