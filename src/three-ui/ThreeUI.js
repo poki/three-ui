@@ -339,9 +339,10 @@ ThreeUI.prototype.clickHandler = function(event) {
 	var callbackQueue = [];
 	this.eventListeners.click.forEach(function(listener) {
 		var displayObject = listener.displayObject;
-		var position = displayObject.determinePositionInCanvas();
 		if (!displayObject.shouldReceiveEvents()) return;
-		if (ThreeUI.isInBoundingBox(coords.x, coords.y, position.x, position.y, displayObject.width, displayObject.height)) {
+
+		var bounds = displayObject.getBounds();
+		if (ThreeUI.isInBoundingBox(coords.x, coords.y, bounds.x, bounds.y, bounds.width, bounds.height)) {
 			// Put listeners in a queue first, so state changes do not impact checking other click handlers
 			callbackQueue.push(listener.callback);
 		}
