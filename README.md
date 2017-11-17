@@ -43,7 +43,7 @@ rectangle.anchor.x = ThreeUI.anchors.center;
 rectangle.anchor.y = ThreeUI.anchors.center;
 
 // Add some text to the rectangle
-const text = ui.createText('BEST BUTTON EVER', '40px Arial', 'white');
+const text = ui.createText('BEST BUTTON EVER', 40, 'Arial', 'white');
 text.textAlign = 'center';
 text.textBaseline = 'middle';
 text.anchor.x = ThreeUI.anchors.center;
@@ -134,7 +134,7 @@ function init () {
 	stretchRectangle.offset.right = '50%'; // Offsets can also be in %	
 
 	// Create text (text, font, color)
-	var text = this.ui.createText('Hello World!', '20px webFont', '#ffffff');
+	var text = this.ui.createText('Hello World!', 20, 'webFont', '#ffffff');
 	text.y = 50;
 	text.anchor.x = ThreeUI.anchors.center;
 	text.anchor.y = ThreeUI.anchors.top;
