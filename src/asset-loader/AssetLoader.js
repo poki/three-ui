@@ -1,9 +1,8 @@
-// const JSZip = require('jszip'); 
-// const JSZipUtils = require('jszip-utils');
+// const JSZip = require('jszip');
 
 /**
  * AssetLoader
- * 
+ *
  * Handles loading of assets
  */
 
@@ -18,7 +17,7 @@ AssetLoader.maxConcurrency = Infinity;
 
 /**
  * Load provided assets and call callback when done
- * 
+ *
  * @param {Object[]} assets Array of Objects that have key: identifier and value: file source
  * @param {Function} callback
  */
@@ -46,7 +45,7 @@ AssetLoader.queueNext = function() {
 
 /**
  * Used internally to store loaded assets
- * 
+ *
  * @param {string} key
  * @param {any} asset
  */
@@ -58,7 +57,7 @@ AssetLoader.done = function(key, asset) {
 
 /**
  * Used internally to push a loader method to the queue
- * 
+ *
  * @param {function}
  */
 
@@ -72,16 +71,16 @@ AssetLoader.push = function(func) {
 
 /**
  * Listener for progress, set to create progress bars etc.
- * 
- * @param {float} progress progress between 0 and 1, where 1 is fully loaded 
+ *
+ * @param {float} progress progress between 0 and 1, where 1 is fully loaded
  */
 
 AssetLoader.progressListener = null;
 
 /**
  * Retrieves current AssetLoader progress
- * 
- * @return {float} progress progress between 0 and 1, where 1 is fully loaded 
+ *
+ * @return {float} progress progress between 0 and 1, where 1 is fully loaded
  */
 
 AssetLoader.getProgress = function() {
@@ -104,9 +103,9 @@ AssetLoader.getProgress = function() {
 
 /**
  * Used internally to update progress made on an asset
- * 
+ *
  * @param {number} done
- * @param {number} total 
+ * @param {number} total
  */
 
 AssetLoader.updateAssetProgress = function(asset, done, total) {
@@ -126,9 +125,9 @@ AssetLoader.updateAssetProgress = function(asset, done, total) {
 
 /**
  * Retrieve an asset by its ID
- * 
+ *
  * @param {string} id
- * 
+ *
  * @return {Image|Object}
  */
 
@@ -138,7 +137,7 @@ AssetLoader.getAssetById = function(id) {
 
 /**
  * Internal utility function that handles running loader function collection in queue
- * 
+ *
  * @param {Function[][]} queue queue with collections of loader functions
  * @param {Function} callback Function that is called after the queue is finished
  */
@@ -160,7 +159,7 @@ AssetLoader.asyncQueue = function(queue, callback) {
 
 /**
  * Internal utility function that allows simultanuous running of a collection of async methods
- * 
+ *
  * @param {Function[]} collection Collection of loader functions
  * @param {Function} callback Function that is called after the queue is finished
  */
@@ -188,7 +187,7 @@ AssetLoader.asyncCollection = function(collection, callback) {
 
 /**
  * Loader that auto-detects file-type, only to be used for basic loading
- * 
+ *
  * @param {string} asset
  */
 
@@ -199,7 +198,7 @@ AssetLoader.add = function(asset) {
 	} else if (fileType === 'json') {
 		AssetLoader.add.json(asset);
 	} else if (fileType === 'css') {
-		AssetLoader.add.css(asset);	
+		AssetLoader.add.css(asset);
 	} else {
 		throw new Error('Unsupported file-type (' + fileType + ') passed to AssetLoader.add.');
 	}
@@ -207,11 +206,11 @@ AssetLoader.add = function(asset) {
 
 /**
  * Loader that takes care of loading images
- * 
+ *
  * @param {string} asset
  */
 
-AssetLoader.add.image = function(asset) { 
+AssetLoader.add.image = function(asset) {
 	AssetLoader.push(function(done) {
 		var img = new Image();
 		img.onload = function() {
@@ -227,16 +226,14 @@ AssetLoader.add.image = function(asset) {
 
 /**
  * Loader that takes care of loading archives
- * 
+ *
  * @param {string} asset
  */
 
-// AssetLoader.add.archive = function(asset, callback) { 
+// AssetLoader.add.archive = function(asset, callback) {
 // 	AssetLoader.push(function(done) {
-// 		JSZipUtils.getBinaryContent(asset, function(err, data) {
-// 			if(err) throw err;
-		
-// 			JSZip.loadAsync(data).then(function (data) {
+// 		loadGeneric(asset, function(response) {
+// 			JSZip.loadAsync(response).then(function(data) {
 // 				AssetLoader.done(asset, data);
 // 				AssetLoader.updateAssetProgress(asset, 1, 1);
 // 				done();
@@ -251,11 +248,11 @@ AssetLoader.add.image = function(asset) {
 
 /**
  * Loads audio
- * 
+ *
  * @param {string} asset
  */
 AssetLoader.setupAudioLoader = function() {
-	AssetLoader.audioLoader = AssetLoader.audioLoader || new THREE.AudioLoader(); 
+	AssetLoader.audioLoader = AssetLoader.audioLoader || new THREE.AudioLoader();
 };
 
 AssetLoader.add.audio = function(filename) {
@@ -268,7 +265,7 @@ AssetLoader.add.audio = function(filename) {
 	});
 };
 
-AssetLoader.add.plainAudio = function(asset) { 
+AssetLoader.add.plainAudio = function(asset) {
 	AssetLoader.push(function(done) {
 		var audio = new Audio(asset);
 		AssetLoader.done(asset, audio);
@@ -278,12 +275,12 @@ AssetLoader.add.plainAudio = function(asset) {
 
 /**
  * Loader that takes care of loading sprite sheets
- * 
+ *
  * @param {string} image
  * @param {string} json
  */
 
-AssetLoader.add.spriteSheet = function(image, json) { 
+AssetLoader.add.spriteSheet = function(image, json) {
 	AssetLoader.add.image(image);
 	AssetLoader.add.json(json);
 
@@ -292,12 +289,12 @@ AssetLoader.add.spriteSheet = function(image, json) {
 
 /**
  * Loader that takes care of loading bitmap text
- * 
+ *
  * @param {string} image
  * @param {string} json
  */
 
-AssetLoader.add.bitmapText = function(image, json) { 
+AssetLoader.add.bitmapText = function(image, json) {
 	AssetLoader.add.image(image);
 	AssetLoader.add.json(json);
 
@@ -306,12 +303,12 @@ AssetLoader.add.bitmapText = function(image, json) {
 
 /**
  * Loader that takes care of loading web font
- * 
+ *
  * @param {string} fontFamily the font family as defined in the webfont's css file
  * @param {string} css
  */
 
-AssetLoader.add.webFont = function(fontFamily, css) { 
+AssetLoader.add.webFont = function(fontFamily, css) {
 	AssetLoader.add.css(css);
 
 	// Preload font
@@ -327,11 +324,11 @@ AssetLoader.add.webFont = function(fontFamily, css) {
 
 /**
  * Loader that takes care of loading JSON files
- * 
+ *
  * @param {string} asset
  */
 
-AssetLoader.add.json = function(asset) { 
+AssetLoader.add.json = function(asset) {
 	AssetLoader.push(function(done) {
 		loadJSON(asset, function(response) {
 			AssetLoader.done(asset, response);
@@ -342,11 +339,11 @@ AssetLoader.add.json = function(asset) {
 
 /**
  * Loader that takes care of loading scripts
- * 
+ *
  * @param {string} script
  */
 
-AssetLoader.add.script = function(asset) { 
+AssetLoader.add.script = function(asset) {
 	AssetLoader.push(function(done) {
 		AssetLoader.loader.script(asset, function() {
 			AssetLoader.done(asset, asset);
@@ -364,11 +361,11 @@ AssetLoader.loader.script = function(asset, callback) {
 
 /**
  * Loader that takes care of loading CSS files
- * 
+ *
  * @param {string} asset
  */
 
-AssetLoader.add.css = function(asset) { 
+AssetLoader.add.css = function(asset) {
 	AssetLoader.push(function(done) {
 		var el = document.createElement('link');
 		el.type = 'text/css';
@@ -384,18 +381,23 @@ AssetLoader.add.css = function(asset) {
 
 /**
  * Helper method to load generic files
- * 
- * @param {string} url 
+ *
+ * @param {string} url
  * @param {Function} callback Function that accepts an Object as first argument
  */
 
 var loadGeneric = function(url, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
-	
+
+	// if (url.indexOf('.zip') !== -1) {
+	// 	// Archives should probably have an adjusted version of "loadGeneric()" instead of this hack
+	// 	xhr.responseType = 'arraybuffer';
+	// }
+
 	var readyCallback = function() {
 		if (xhr.readyState === 4) { // Done
-			callback(xhr.response);
+			callback(xhr.response || xhr.responseText);
 			xhr.onload = null;
 			xhr.onreadystatechange = null;
 		}
@@ -415,8 +417,8 @@ var loadGeneric = function(url, callback) {
 
 /**
  * Helper method to load JSON files
- * 
- * @param {string} url 
+ *
+ * @param {string} url
  * @param {Function} callback Function that accepts an Object as first argument
  */
 
