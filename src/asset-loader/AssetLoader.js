@@ -4,16 +4,23 @@
  * AssetLoader
  *
  * Handles loading of assets
+ *
+ * @todo: rewrite to ES6 now that it runs through webpack
+ * @todo: should not be static, and configurable through constructor
+ * @todo: custom loaders need to be separate addons (i.e. the ones dependent on (js)zip and three.js)
  */
 
 var AssetLoader = {};
 
+// Configuration
+AssetLoader.maxConcurrency = Infinity;
+
+// Working variables
 AssetLoader.assetProgress = {};
 AssetLoader.loadedAssets = {};
 AssetLoader.queue = [];
 AssetLoader.queueIdx = 0;
 AssetLoader.loader = {};
-AssetLoader.maxConcurrency = Infinity;
 
 /**
  * Load provided assets and call callback when done
@@ -271,34 +278,6 @@ AssetLoader.add.plainAudio = function(asset) {
 		AssetLoader.done(asset, audio);
 		done();
 	});
-};
-
-/**
- * Loader that takes care of loading sprite sheets
- *
- * @param {string} image
- * @param {string} json
- */
-
-AssetLoader.add.spriteSheet = function(image, json) {
-	AssetLoader.add.image(image);
-	AssetLoader.add.json(json);
-
-	// @TODO: Parse sheet
-};
-
-/**
- * Loader that takes care of loading bitmap text
- *
- * @param {string} image
- * @param {string} json
- */
-
-AssetLoader.add.bitmapText = function(image, json) {
-	AssetLoader.add.image(image);
-	AssetLoader.add.json(json);
-
-	// @TODO: Parse sheet
 };
 
 /**
