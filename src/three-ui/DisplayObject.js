@@ -2,14 +2,14 @@ var anchors = require('./anchors.js');
 
 /**
  * DisplayObject
- * 
+ *
  * Used internally by ThreeUI, shouldn't be used directly
  * Use ThreeUI.createSprite and ThreeUI.createRectangle methods instead
- * 
+ *
  * @param {ThreeUI} ui
- * @param {string} assetId 
- * @param {int} x 
- * @param {int} y 
+ * @param {string} assetId
+ * @param {int} x
+ * @param {int} y
  */
 
 var DisplayObject = function(ui, x, y, width, height) {
@@ -45,7 +45,7 @@ var DisplayObject = function(ui, x, y, width, height) {
 
 /**
  * Get the bounds for the DisplayObject's position in the canvas
- * 
+ *
  * @return {Object} position {x, y, width, height}
  */
 
@@ -63,7 +63,7 @@ DisplayObject.prototype.getBounds = function() {
 
 /**
  * Get the bounds for this DisplayObject's parent
- * 
+ *
  * @return {Object} position {x, y, width, height}
  */
 
@@ -84,7 +84,7 @@ DisplayObject.prototype.getParentBounds = function () {
 
 /**
  * Determine the DisplayObject's actual position in the canvas based on anchor and pivot
- * 
+ *
  * @return {Object} position {x, y}
  */
 
@@ -103,7 +103,7 @@ DisplayObject.prototype.determinePositionInCanvas = function() {
 		if (this.stretch.y) {
 			position.y = parentBounds.y + offset.top;
 		}
-	} 
+	}
 
 	position = this.adjustPositionForAnchor(position.x, position.y);
 	position = this.adjustPositionForPivot(position.x, position.y);
@@ -113,7 +113,7 @@ DisplayObject.prototype.determinePositionInCanvas = function() {
 
 /**
  * Determine the DisplayObject's actual dimensions in the canvas based on stretching
- * 
+ *
  * @return {Object} dimensions {width, height}
  */
 
@@ -133,7 +133,7 @@ DisplayObject.prototype.determineDimensionsInCanvas = function() {
 		if (this.stretch.y) {
 			dimensions.height = parentBounds.height - offset.top - offset.bottom;
 		}
-	} 
+	}
 
 	return dimensions;
 };
@@ -141,7 +141,7 @@ DisplayObject.prototype.determineDimensionsInCanvas = function() {
 
 /**
  * Adjust given position for anchor
- * 
+ *
  * @param {int} x
  * @param {int} y
  * @return {Object} position {x, y}
@@ -180,7 +180,7 @@ DisplayObject.prototype.adjustPositionForAnchor = function(x , y) {
 
 /**
  * Gets calculated offset in canvas space
- * 
+ *
  * @return {Object} offset {x, y}
  */
 
@@ -194,7 +194,7 @@ DisplayObject.prototype.getOffsetInCanvas = function() {
 
 	// Transform percentage offsets to numbers
 	var parentBounds;
-	
+
 	var keys = Object.keys(offset);
 	var length = keys.length;
 	for (var i = 0;i < length;i++) {
@@ -202,7 +202,7 @@ DisplayObject.prototype.getOffsetInCanvas = function() {
 		var value = offset[key];
 		if (typeof value !== 'number') {
 			parentBounds = parentBounds || this.getParentBounds();
-		
+
 			var percValue = parseFloat(value.match(/^([0-9\.]+)%$/)[1]);
 			offset[key] = percValue / 100 * parentBounds.width;
 		}
@@ -213,7 +213,7 @@ DisplayObject.prototype.getOffsetInCanvas = function() {
 
 /**
  * Adjust given position for pivot
- * 
+ *
  * @param {int} x
  * @param {int} y
  * @return {Object} position {x, y}
@@ -222,7 +222,7 @@ DisplayObject.prototype.getOffsetInCanvas = function() {
 DisplayObject.prototype.adjustPositionForPivot = function(x , y) {
 	// Adjust position for pivot
 	x = x - this.width * this.pivot.x;
-	y = y - this.height * this.pivot.y;	
+	y = y - this.height * this.pivot.y;
 
 	return {
 		x: x,
@@ -240,7 +240,7 @@ DisplayObject.prototype.shouldReceiveEvents = function() {
 
 /**
  * Attach a click event handler to this DisplayObject
- * 
+ *
  * @param {Function} callback
  */
 
@@ -250,14 +250,12 @@ DisplayObject.prototype.onClick = function(callback) {
 
 /**
  * Render this DisplayObject onto the provided context
- * 
+ *
  * @param {CanvasRenderingContext2D} context
  */
 
-DisplayObject.prototype.render = function(context, resolution) {
+DisplayObject.prototype.render = function(context) {
 	if (!this.visible) return;
-
-	resolution = resolution || 1;
 
 	context.save();
 
@@ -267,8 +265,8 @@ DisplayObject.prototype.render = function(context, resolution) {
 		var radians = (Math.PI / 180) * this.rotation;
 
 		var pivotAdjustment = this.adjustPositionForPivot(0, 0);
-		var moveX = bounds.x - pivotAdjustment.x; 
- 		var moveY = bounds.y - pivotAdjustment.y; 
+		var moveX = bounds.x - pivotAdjustment.x;
+ 		var moveY = bounds.y - pivotAdjustment.y;
 
 		context.translate(moveX, moveY);
 		context.rotate(radians);
@@ -282,14 +280,14 @@ DisplayObject.prototype.render = function(context, resolution) {
 	if (typeof context['msImageSmoothingEnabled'] !== 'undefined') context['msImageSmoothingEnabled'] = this.smoothing;
 	if (typeof context['imageSmoothingEnabled'] !== 'undefined') context['imageSmoothingEnabled'] = this.smoothing;
 
-	this.draw(context, bounds.x * resolution, bounds.y * resolution, bounds.width * resolution, bounds.height * resolution);
+	this.draw(context, bounds.x, bounds.y, bounds.width, bounds.height);
 
 	context.restore();
 };
 
 /**
  * Draw the current sprite on the provided context, varies per DisplayObject type
- * 
+ *
  * @param {CanvasRenderingContext2D} context
  * @param {int} x
  * @param {int} y
@@ -305,13 +303,13 @@ DisplayObject.draw = function(context, x, y, width, height) {
  * Getter for visibility
  */
 Object.defineProperty(DisplayObject.prototype, '_proxied_visible', { // Set on proxied, as we're already observing
-	get: function() { 
+	get: function() {
 		if (this.parent && this.parent !== this && !this.parent.visible) {
 			return false;
 		} else {
 			return this._visible;
 		}
-	}, 
+	},
 	set: function(toggle) {
 		return this._visible = toggle;
 	},

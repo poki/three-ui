@@ -3,15 +3,15 @@ var DisplayObject = require('./DisplayObject.js');
 /**
  * BitmapText
  * @extends ThreeUI.DisplayObject
- * 
+ *
  * Used internally by ThreeUI, shouldn't be used directly
  * Use ThreeUI.createBitmapText instead to create text
- * 
+ *
  * @param {ThreeUI} ui
  * @param {string} text
  * @param {float} scale
- * @param {int} x 
- * @param {int} y 
+ * @param {int} x
+ * @param {int} y
  */
 
 var fallbackWidth = 6;
@@ -21,12 +21,12 @@ var BitmapText = function(ui, text, scale, x, y, sheetImagePath, sheetDataPath) 
 	this.parseSheet(sheetImagePath, sheetDataPath);
 
 	this.scale = typeof scale !== 'undefined' ? scale : 1;
-	
+
 	this.setText(text);
 
 	var x = typeof x !== 'undefined' ? x : 0;
 	var y = typeof y !== 'undefined' ? y : 0;
-	
+
 	var dimensions = this.calculateDimensions();
 
 	// Run DisplayObject constructor on this object
@@ -40,7 +40,7 @@ BitmapText.prototype = Object.create(DisplayObject.prototype);
 
 /**
  * Set the text of this BitmapText
- * 
+ *
  * @param {string} text
  */
 
@@ -57,7 +57,7 @@ BitmapText.prototype.setText = function(text) {
 
 /**
  * Parse a sheet from its image and data
- * 
+ *
  * @param {string} sheetImagePath
  * @param {string} sheetDataPath
  */
@@ -90,13 +90,13 @@ BitmapText.prototype.parseSheet = function(sheetImagePath, sheetDataPath) {
 	for (var i = 0;i < length;i++) {
 		var char = keys[i];
 		var data = this.sheetData[char];
-	
+
 		// Make sure coords are within bounds
 		data['uv0'][0] = Math.min(1, Math.max(0, data['uv0'][0]));
 		data['uv0'][1] = Math.min(1, Math.max(0, data['uv0'][1]));
 		data['uv1'][0] = Math.min(1, Math.max(0, data['uv1'][0]));
 		data['uv1'][1] = Math.min(1, Math.max(0, data['uv1'][1]));
-	
+
 		// Calculate pixel coordinates
 		this.characterData[char] = {
 			x: Math.round(data['uv0'][0] * this.sheet.width),
@@ -104,7 +104,7 @@ BitmapText.prototype.parseSheet = function(sheetImagePath, sheetDataPath) {
 			width: Math.round((data['uv1'][0] - data['uv0'][0]) * this.sheet.width),
 			height: Math.round((data['uv0'][1] - data['uv1'][1]) * this.sheet.height),
 		};
-	
+
 		// Width and height need to be bigger than 0 or some browsers will break
 		var cData = this.characterData[char];
 		cData.width = Math.max(0.00001, cData.width);
@@ -115,7 +115,7 @@ BitmapText.prototype.parseSheet = function(sheetImagePath, sheetDataPath) {
 /**
  * Calculates the dimensions of this BitmapText
  * Internal use only
- * 
+ *
  * @return {object} {width, height}
  */
 
@@ -132,7 +132,7 @@ BitmapText.prototype.calculateDimensions = function() {
 			// Take dimensions of first existing character instead
 			character = Object.keys(this.characterData)[0];
 		}
-	
+
 		var data = this.characterData[character];
 		dimensions.width += data ? data.width : 0;
 		dimensions.height = Math.max(dimensions.height, data ? data.height : 0);
@@ -147,7 +147,7 @@ BitmapText.prototype.calculateDimensions = function() {
 /**
  * Draw this BitmapText onto the provided context
  * Used internally by DisplayObject.render
- * 
+ *
  * @param {CanvasRenderingContext2D} context
  * @param {int} x
  * @param {int} y
@@ -168,7 +168,7 @@ BitmapText.prototype.draw = function(context, x, y) {
 /**
  * Draw give character BitmapText onto the provided context
  * Used internally by DisplayObject.render
- * 
+ *
  * @param {CanvasRenderingContext2D} context
  * @param {int} x
  * @param {int} y
@@ -187,8 +187,8 @@ BitmapText.prototype.drawCharacter = function(context, character, x, y) {
 		skipDraw = true;
 	}
 
-	var width = data.width * this.scale * this.ui.resolution;
-	var height = data.height * this.scale * this.ui.resolution;
+	var width = data.width * this.scale;
+	var height = data.height * this.scale;
 
 	if (!skipDraw) {
 		context.drawImage(this.sheet, data.x, data.y, data.width, data.height, x, y, width, height);

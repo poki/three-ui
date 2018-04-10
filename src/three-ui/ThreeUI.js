@@ -34,10 +34,10 @@ var observeDirtyProperties = function(object, ui) {
 
 /**
  * ThreeUI
- * 
+ *
  * UI Class that renders an internal 2d canvas onto a plane
- * 
- * @param {HTMLCanvasElement} gameCanvas 
+ *
+ * @param {HTMLCanvasElement} gameCanvas
  * @param {int} height The pixel height of this UI -- Default: 720
  * @param {bool} renderOnQuad Render on a quad, if false, canvas will be in DOM
  */
@@ -55,7 +55,7 @@ var ThreeUI = function(gameCanvas, height, renderOnQuad) {
 	this.context = this.canvas.getContext('2d');
 	this.renderOnQuad = renderOnQuad || false;
 	this.shouldReDraw = true;
-	
+
 	if (this.renderOnQuad) {
 		this.prepareThreeJSScene();
 	} else {
@@ -64,13 +64,13 @@ var ThreeUI = function(gameCanvas, height, renderOnQuad) {
 
 	this.resize();
 
-	// Event listening	
+	// Event listening
 
 	window.addEventListener('touchend', this.clickHandler.bind(this));
-	
+
 	if (isFirefox) {
 		// Firefox blocks window.open from mousedown events, so bind click instead
-		window.addEventListener('click', this.clickHandler.bind(this));	
+		window.addEventListener('click', this.clickHandler.bind(this));
 	} else {
 		window.addEventListener('mousedown', this.clickHandler.bind(this));
 	}
@@ -104,7 +104,7 @@ ThreeUI.prototype.addCanvasToDom = function() {
 
 ThreeUI.prototype.prepareThreeJSScene = function() {
 	this.camera = new THREE.OrthographicCamera(
-		-this.canvas.width / 2, 
+		-this.canvas.width / 2,
 		this.canvas.width / 2,
 		this.canvas.height / 2,
 		-this.canvas.height / 2,
@@ -112,9 +112,9 @@ ThreeUI.prototype.prepareThreeJSScene = function() {
 	);
 
 	this.scene = new THREE.Scene();
-	
+
 	this.texture = new THREE.Texture(this.canvas);
-	
+
 	var material = new THREE.MeshBasicMaterial({ map: this.texture });
 	material.transparent = true;
 
@@ -160,7 +160,7 @@ ThreeUI.prototype.draw = function() {
 	var self = this;
 	var length = this.displayObjects.length;
 	for (var i = 0;i < length;i++) {
-		this.displayObjects[i].render(self.context, this.resolution);
+		this.displayObjects[i].render(self.context);
 	}
 
 	// Make sure the texture gets re-drawn
@@ -173,20 +173,20 @@ ThreeUI.prototype.draw = function() {
 
 /**
  * Render the UI with the provided renderer
- * 
+ *
  * @param {THREE.WebGLRenderer} renderer
  */
 
-ThreeUI.prototype.render = function(renderer) { 
+ThreeUI.prototype.render = function(renderer) {
 	this.draw();
-	
+
 	if (this.renderOnQuad) {
 		renderer.render(this.scene, this.camera);
 	}
 
 	if (this.colorReplace) {
 		this.context.save();
-		
+
 		this.context.fillStyle = this.colorReplace
 		this.context.globalCompositeOperation = 'source-atop';
 		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -197,13 +197,13 @@ ThreeUI.prototype.render = function(renderer) {
 
 /**
  * Create a new Sprite
- * 
+ *
  * @param {string} imagePath
  * @param {int} x
  * @param {int} y
  * @param {int} width
  * @param {int} height
- * 
+ *
  * @return {Sprite}
  */
 
@@ -216,7 +216,7 @@ ThreeUI.prototype.createSprite = function(imagePath, x, y, width, height) {
 
 /**
  * Create a new Sprite from a sheet
- * 
+ *
  * @param {string} imagePath
  * @param {string} sheetImagePath
  * @param {string} sheetDataPath
@@ -224,7 +224,7 @@ ThreeUI.prototype.createSprite = function(imagePath, x, y, width, height) {
  * @param {int} y
  * @param {int} width
  * @param {int} height
- * 
+ *
  * @return {Sprite}
  */
 
@@ -237,13 +237,13 @@ ThreeUI.prototype.createSpriteFromSheet = function(imagePath, sheetImagePath, sh
 
 /**
  * Create a new Rectangle
- * 
+ *
  * @param {string} color
  * @param {int} x
  * @param {int} y
  * @param {int} width
  * @param {int} height
- * 
+ *
  * @return {Rectangle}
  */
 
@@ -256,13 +256,13 @@ ThreeUI.prototype.createRectangle = function(color, x, y, width, height) {
 
 /**
  * Create a new Text
- * 
+ *
  * @param {string} text
  * @param {string} font
  * @param {string} color
  * @param {int} x
  * @param {int} y
- * 
+ *
  * @return {Text}
  */
 
@@ -275,13 +275,13 @@ ThreeUI.prototype.createText = function(text, font, color, x, y) {
 
 /**
  * Create a new BitmapText
- * 
+ *
  * @param {string} text
  * @param {string} font
  * @param {string} color
  * @param {int} x
  * @param {int} y
- * 
+ *
  * @return {BitmapText}
  */
 
@@ -295,7 +295,7 @@ ThreeUI.prototype.createBitmapText = function(text, size, x, y, sheetImagePath, 
 /**
  * Add a new event listener, called by ThreeUI.DisplayObject
  * Shouldn't be used directly
- * 
+ *
  * @param {string} type
  * @param {Function} callback This callback is called when the event is triggered, and is passed the DisplayObject as a first argument
  * @param {ThreeUI.DisplayObject} displayObject
@@ -310,7 +310,7 @@ ThreeUI.prototype.addEventListener = function(type, callback, displayObject) {
 
 /**
  * Used internally to determine which registered click event listeners should be called upon click
- * 
+ *
  * @param {MouseEvent} event
  */
 
@@ -335,7 +335,7 @@ ThreeUI.prototype.clickHandler = function(event) {
 	if (this.listeningToTouchEvents && event instanceof MouseEvent || coords === null) return;
 
 	coords = this.windowToUISpace(coords.x, coords.y);
-	
+
 	var callbackQueue = [];
 	this.eventListeners.click.forEach(function(listener) {
 		var displayObject = listener.displayObject;
@@ -347,25 +347,25 @@ ThreeUI.prototype.clickHandler = function(event) {
 			callbackQueue.push(listener.callback);
 		}
 	});
-	
-	callbackQueue.forEach(function(callback){ 
+
+	callbackQueue.forEach(function(callback){
 		callback();
 	});
 };
 
 /**
  * Helper method that converts a point to UI space from window space
- * 
+ *
  * @param {int} x
  * @param {int} y
- * 
+ *
  * @return {Object} x,y coordinates
  */
 
 ThreeUI.prototype.windowToUISpace = function(x, y) {
 	var bounds = this.gameCanvas.getBoundingClientRect();
 	var scale = this.height / bounds.height;
-	
+
 	return {
 		x: (x - bounds.left) * scale,
 		y: (y - bounds.top) * scale,
@@ -375,9 +375,9 @@ ThreeUI.prototype.windowToUISpace = function(x, y) {
 /**
  * Moves a ui element to the back of the displayobject queue
  * which causes it to render above other objects
- * 
+ *
  * @param {ThreeUI.DisplayObject} displayObject
- */ 
+ */
 ThreeUI.prototype.moveToFront = function(displayObject) {
 	var elIdx = this.displayObjects.indexOf(displayObject);
 
@@ -390,18 +390,18 @@ ThreeUI.prototype.moveToFront = function(displayObject) {
 
 /**
  * Helper method used to determine whether a point is inside of a given bounding box
- * 
- * @param {int} x 
- * @param {int} y 
- * @param {int} boundX 
- * @param {int} boundY 
- * @param {int} boundWidth 
+ *
+ * @param {int} x
+ * @param {int} y
+ * @param {int} boundX
+ * @param {int} boundY
+ * @param {int} boundWidth
  * @param {int} boundHeight
- * 
- * @return {bool} 
+ *
+ * @return {bool}
  */
 
-ThreeUI.isInBoundingBox = function(x, y, boundX, boundY, boundWidth, boundHeight) { 
+ThreeUI.isInBoundingBox = function(x, y, boundX, boundY, boundWidth, boundHeight) {
 	return (
 		x >= boundX &&
 		x <= boundX + boundWidth &&
