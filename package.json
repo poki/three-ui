@@ -8,11 +8,16 @@
 		"build": "npm-run-all build:*",
 		"build:cleanup": "rm -rf lib",
 		"build:webpack": "webpack",
+		"build:examples": "cpx 'examples/**/*' dist",
+		"build:examplesLib": "cpx 'lib/**/*' dist",
 		"watch": "npm-run-all --parallel watch:*",
 		"watch:cleanup": "rm -rf lib",
-		"watch:webpack": "webpack --watch"
+		"watch:webpack": "webpack --watch",
+		"watch:examples": "cpx 'examples/**/*' dist --watch",
+		"watch:examplesLib": "cpx 'lib/**/*' dist --watch"
 	},
 	"devDependencies": {
+		"cpx": "^1.5.0",
 		"npm-run-all": "^4.0.2",
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"webpack": "^2.6.1"
