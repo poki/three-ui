@@ -1,6 +1,6 @@
 {
 	"name": "@poki/three-ui",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"author": "Kasper Mol <kasper@poki.com>",
 	"description": "UI system for Three.JS",
 	"license": "MIT",
